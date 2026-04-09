@@ -1,0 +1,114 @@
+<div
+	#cameraContainer
+	[ngClass]="{ 'camera-container--active': isCameraActive }"
+	class="camera-container"
+	id="camera-container"
+>
+	<div
+		*ngIf="launchingCamera$ | async as loadingMessage; else cameraContainerTemplate"
+		class="camera-container__layer camera-container__layer-error"
+		id="error-info-layer"
+	>
+		<span [innerHTML]="loadingMessage" id="cameraLoadingMessage"></span>
+		<div
+			class="camera-container__layer-error-action"
+			id="back-button"
+			(click)="closeCamera()"
+			(keydown.enter)="closeCamera()"
+			(keydown.space)="closeCamera()"
+			tabindex="0"
+			role="button"
+			aria-label="Back"
+			aria-keyshortcuts="Enter Space"
+		>
+			&lt; Back
+		</div>
+	</div>
+
+	<ng-template #cameraContainerTemplate>
+		<div
+			class="camera-container__layer camera-container__layer-video"
+			id="real-time-video-layer"
+			[ngClass]="{ 'camera-container__layer--active': imageVideoForward }"
+		>
+			<video #cameraVideoPlayer class="camera-container__video" id="camera-video" autoplay muted playsinline>
+				<track src="captions_en.vtt" kind="captions" srclang="en" label="english_captions" />
+			</video>
+			<div *ngIf="imageVideoForward" class="camera-container__button-container">
+				<div
+					class="camera-container__button camera-container__button-capture"
+					id="capture-button"
+					[ngClass]="{
+						'camera-container__button-capture--landscape': isLandscapeMode
+					}"
+					(click)="captureImage()"
+					(keydown.enter)="captureImage()"
+					(keydown.space)="captureImage()"
+					tabindex="0"
+					role="button"
+					aria-label="Capture Image"
+					aria-keyshortcuts="Enter Space"
+				>
+					<div></div>
+				</div>
+			</div>
+
+			<ng-container *ngIf="imageVideoForward && isLandscapeMode">
+				<div class="camera-container__button camera-container__button-panel">
+					<agic-button color="secondary" (clickHandler)="closeCamera()">Cancel</agic-button>
+					<agic-button color="primary" (clickHandler)="bringHelpInfoLayerForward()">Instructions</agic-button>
+				</div>
+			</ng-container>
+			<div *ngIf="imageVideoForward" class="camera-container__info" id="video-overlay-layer">
+				<ng-content select="[videoOverlayLayer]"></ng-content>
+			</div>
+		</div>
+		<div
+			class="camera-container__layer camera-container__layer-orientation"
+			id="orientation-info-layer"
+			[ngClass]="{
+				'camera-container__layer--active': orientationInforLayerForward
+			}"
+			*ngIf="!imageVideoForward && !imageCanvasForward"
+		>
+			<ng-content select="[orientationRotateInfo]"></ng-content>
+		</div>
+		<div
+			#helpInfoLayer
+			class="camera-container__layer camera-container__layer-help"
+			id="help-info-layer"
+			[ngClass]="{ 'camera-container__layer--active': imageHelpInfoForward }"
+			*ngIf="!imageVideoForward && !imageCanvasForward"
+		>
+			<ng-content select="[helpInfo]"></ng-content>
+		</div>
+		<div
+			class="camera-container__layer camera-container__layer-image"
+			id="real-time-image-layer"
+			[ngClass]="{ 'camera-container__layer--active': imageCanvasForward }"
+			*ngIf="!imageVideoForward"
+		>
+			<img
+				#imageCanvas
+				class="camera-container__layer-image-canvas"
+				[ngClass]="{
+					'camera-container__layer-image-canvas--scale': !isCorrectOrientation
+				}"
+				[src]="currentImageDataUri"
+				alt="camera image"
+			/>
+			<div class="camera-container__layer-image-action">
+				<div class="camera-container__layer-image-action__notes">
+					<span
+						><strong>Important</strong>: Once you click Submit, you won't be able to retake this
+						photo.</span
+					>
+				</div>
+				<div class="camera-container__layer-image-action__buttons">
+					<agic-button color="secondary" (clickHandler)="retakeImage()">Retake</agic-button>
+					<agic-button color="primary" (clickHandler)="useImage()">Submit</agic-button>
+				</div>
+			</div>
+		</div>
+	</ng-template>
+</div>

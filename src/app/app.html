@@ -1,0 +1,152 @@
+<style>
+  :host {
+    display: block;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      Helvetica, Arial, sans-serif;
+    height: 100dvh;
+  }
+
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    padding: 2rem;
+    gap: 1rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    margin: 0;
+  }
+
+  .launch-btn {
+    padding: 0.75rem 1.5rem;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .orientation-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .header-controls {
+    cursor: pointer;
+    padding: 0.5rem;
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    color: #fff;
+    font-size: 1rem;
+  }
+
+  .rotate-camera-heading {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .camera-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .info-layer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .info-layer-text {
+    max-width: 300px;
+  }
+
+  .continue-controls {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    color: #fff;
+    font-size: 1rem;
+  }
+</style>
+
+<div class="app-container">
+  <h1>{{ title() }}</h1>
+  <button class="launch-btn" (click)="launchCamera()">Launch Camera</button>
+</div>
+
+<agic-camera
+  #camera
+  [defaultScreenOrientation]="'landscape'"
+  (sourceImageDataEmitter)="cameraImageSourceOutput($event)"
+  (cameraFailureMessageEmitter)="cameraFailureMessageOutput($event)"
+  (cameraUnsupportedMessageEmitter)="cameraUnsupportedMessageOutput()"
+>
+  <span orientationRotateInfo class="orientation-info">
+    <div
+      (click)="closeCamera()"
+      class="header-controls"
+      tabindex="0"
+      (keydown.enter)="closeCamera()"
+      (keydown.space)="closeCamera()"
+    >
+      <span>&lt; Back</span>
+    </div>
+    <div class="info-layer">
+      <p class="rotate-camera-heading">Please rotate your device</p>
+      <div class="info-layer-text">
+        Rotate your device to landscape mode to continue.
+      </div>
+    </div>
+  </span>
+
+  <div videoOverlayLayer class="video-overlay">
+  </div>
+
+  <div helpInfo class="camera-info">
+    <div
+      (click)="closeCamera()"
+      class="header-controls"
+      tabindex="0"
+      (keydown.enter)="closeCamera()"
+      (keydown.space)="closeCamera()"
+    >
+      <span>&lt; Back</span>
+    </div>
+    <div class="info-layer">
+      <p class="rotate-camera-heading">How to take a photo</p>
+      <div class="info-layer-text">
+        Position the subject within the frame and tap the capture button.
+      </div>
+    </div>
+    <div
+      (click)="bringCameraForward()"
+      class="continue-controls"
+      tabindex="0"
+      (keydown.enter)="bringCameraForward()"
+      (keydown.space)="bringCameraForward()"
+    >
+      <span>Tap to Continue</span>
+    </div>
+  </div>
+</agic-camera>

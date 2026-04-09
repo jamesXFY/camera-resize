@@ -1,0 +1,261 @@
+.camera-container {
+	display: none;
+	width: 100vw;
+	height: 100vh;
+
+	--button-info: 20px;
+	--button-info-margin: 30px;
+	--button-height-small: 30px;
+	--button-width-small: 100px;
+	--button-capture-inner: 50px;
+	--button-capture-outter: 70px;
+	--button-capture-container: 90px;
+	--button-capture-outter-width: 2px;
+	--button-container-height: 60px;
+	--z-index-help-layer: 60;
+	--z-index-info-layer: 61;
+	--z-index-image-layer: 62;
+	--z-index-video-layer: 63;
+	--z-index-capture-button-layer: 99;
+	--z-index-active-layer: 5555;
+	--z-index-error-layer: 9999;
+
+	&--active {
+		display: block;
+		visibility: visible;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+
+	&__video {
+		position: fixed;
+		left: 0;
+		bottom: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		z-index: var(--z-index-info-layer);
+		pointer-events: none;
+	}
+
+	&__layer {
+		position: fixed;
+		left: 0;
+		bottom: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: fill;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+		background-color: rgba(30, 30, 30, 75%);
+
+		&-video {
+			z-index: var(--z-index-video-layer);
+		}
+
+		&-orientation {
+			background-color: rgba(0, 0, 0);
+			z-index: var(--z-index-image-layer);
+		}
+
+		&-help {
+			background-color: rgba(0, 0, 0);
+			z-index: var(--z-index-help-layer);
+		}
+
+		&-image {
+			width: 100%;
+			height: 100%;
+			z-index: var(--z-index-info-layer);
+			background-color: black;
+
+			&-canvas {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+
+				&--scale {
+					object-fit: scale-down;
+				}
+			}
+
+			&-action {
+				width: 100%;
+				position: absolute;
+				bottom: 0;
+				left: 0;
+				display: flex;
+				flex-direction: column;
+				padding: var(--spacing-m) var(--spacing-xl);
+				background-color: rgba(30, 30, 30, 75%);
+
+				&__notes {
+					margin-bottom: var(--spacing-m);
+				}
+
+				&__buttons {
+					height: var(--button-height-small);
+					display: flex;
+					justify-content: space-between;
+					align-items: center;
+
+					::ng-deep agic-button {
+						width: var(--button-width-small);
+
+						button {
+							min-height: 0;
+							padding-top: var(--spacing-xxs);
+							padding-bottom: var(--spacing-xxs);
+						}
+					}
+				}
+			}
+		}
+
+		&-error {
+			background-color: var(--color-gray-600);
+			z-index: var(--z-index-error-layer);
+
+			&-action {
+				position: absolute;
+				color: var(--color-white);
+				bottom: calc(95% - var(--button-info-margin));
+				left: var(--button-info-margin);
+			}
+		}
+
+		&--active {
+			z-index: var(--z-index-active-layer);
+		}
+	}
+
+	&__button {
+		z-index: var(--z-index-video-layer);
+
+		&-container {
+			display: flex;
+			height: var(--button-capture-container);
+			width: var(--button-capture-container);
+			right: 0;
+			position: absolute;
+			background-color: rgba(30, 30, 30, 75%);
+			justify-content: center;
+			align-items: center;
+			z-index: var(--z-index-capture-button-layer);
+			margin-right: 7px;
+			border-radius: 50%;
+			opacity: 0.8;
+		}
+
+		&-capture {
+			position: absolute;
+			display: flex;
+			z-index: var(--z-index-image-layer);
+			width: var(--button-capture-outter);
+			height: var(--button-capture-outter);
+			border-width: var(--button-capture-outter-width);
+			border-color: white;
+			border-radius: 50%;
+			background-color: transparent;
+			align-items: center;
+			justify-content: center;
+			border-style: solid;
+
+			div {
+				width: var(--button-capture-inner);
+				height: var(--button-capture-inner);
+				background-color: white;
+				border-radius: 50%;
+			}
+		}
+
+		&-info {
+			width: var(--button-info);
+			height: var(--button-info);
+			position: absolute;
+			color: var(--color-white);
+			top: var(--spacing-m);
+			right: var(--spacing-m);
+			border: 2px solid var(--color-white);
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			&--landscape {
+				bottom: calc(95% - var(--button-info-margin));
+				right: calc(98% - var(--button-info-margin));
+			}
+		}
+
+		&-back {
+			position: absolute;
+			color: var(--color-white);
+			top: var(--spacing-m);
+			left: var(--spacing-m);
+		}
+
+		&-panel {
+			width: 100%;
+			max-height: 40px;
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			display: flex;
+			align-items: center;
+			font-family: var(--font-700);
+
+			::ng-deep agic-button {
+				width: fit-content;
+				padding: var(--spacing-s) var(--spacing-m);
+				font-family: var(--font-700);
+
+				button {
+					min-height: 0;
+					padding-top: var(--spacing-xxs);
+					padding-bottom: var(--spacing-xxs);
+				}
+			}
+		}
+	}
+
+	&__info {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		::ng-deep * {
+			z-index: var(--z-index-info-layer);
+		}
+	}
+}
+
+#cameraLoadingMessage {
+	padding: 0 50px;
+}
+
+::ng-deep .error-list-element {
+	padding-bottom: 10px !important;
+}
+
+:host {
+	::ng-deep .disable-scroll {
+		visibility: hidden;
+		touch-action: none;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+
+		> * {
+			display: block;
+			width: 100%;
+			height: 100%;
+			overflow: hidden;
+		}
+	}
+}
