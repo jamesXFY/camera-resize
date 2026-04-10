@@ -105,8 +105,8 @@
 					>
 				</div>
 				<div class="camera-container__layer-image-action__buttons">
-					<agic-button color="secondary" (clickHandler)="retakeImage()">Retake</agic-button>
-					<agic-button color="primary" (clickHandler)="useImage()">Submit</agic-button>
+					<agic-button color="secondary" [disabled]="isCapturing" (clickHandler)="retakeImage()">Retake</agic-button>
+					<agic-button color="primary" [disabled]="isCapturing" [loading]="isCapturing" (clickHandler)="useImage()">Submit</agic-button>
 				</div>
 			</div>
 		</div>

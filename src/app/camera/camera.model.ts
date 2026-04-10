@@ -19,5 +19,5 @@ export interface VideoConstraints {
 export interface SourceImageData {
 	imageWidth?: number;
 	imageHeight?: number;
-	sourceImageDataUrl: string;
+	sourceImageDataUrl?: string;
 }
