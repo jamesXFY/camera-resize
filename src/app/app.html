@@ -88,11 +88,38 @@
     color: #fff;
     font-size: 1rem;
   }
+  .image-info {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f0f0f0;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    text-align: left;
+    max-width: 400px;
+    width: 100%;
+  }
+
+  .image-info p {
+    margin: 0.25rem 0;
+  }
+
+  .image-info strong {
+    display: inline-block;
+    min-width: 120px;
+  }
 </style>
 
 <div class="app-container">
   <h1>{{ title() }}</h1>
   <button class="launch-btn" (click)="launchCamera()">Launch Camera</button>
+
+  @if (capturedImage) {
+    <div class="image-info">
+      <p><strong>Original:</strong> {{ capturedImage.imageWidth }} x {{ capturedImage.imageHeight }} px</p>
+      <p><strong>Scaled:</strong> {{ capturedImage.scaledWidth }} x {{ capturedImage.scaledHeight }} px</p>
+      <p><strong>File size:</strong> {{ capturedImage.fileSizeKB }} KB</p>
+    </div>
+  }
 </div>
 
 <agic-camera

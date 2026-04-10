@@ -68,6 +68,9 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   public currentStream!: MediaStream;
   /** current Image DataUri from camera */
   public currentImageDataUri = '';
+  /** scaled dimensions of the last captured frame */
+  private lastScaledWidth = 0;
+  private lastScaledHeight = 0;
 
   /** camera video player element reference */
   private _cameraVideoPlayer!: ElementRef;
@@ -303,6 +306,9 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
     offScreenCanvas.height = height;
     ctx.drawImage(imageSource.source, 0, 0, width, height);
 
+    this.lastScaledWidth = width;
+    this.lastScaledHeight = height;
+
     const dataUri = offScreenCanvas.toDataURL('image/jpeg', 0.8);
 
     // Memory cleanup
@@ -358,10 +364,14 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
    */
   public async useImage() {
     if (!this.currentImageDataUri) return;
+    const fileSizeKB = Math.round(this.currentImageDataUri.length * 3 / 4 / 1024);
     await this.closeCamera();
     this.sourceImageDataEmitter.emit({
       imageWidth: this.cameraVideoPlayer?.nativeElement?.videoWidth,
       imageHeight: this.cameraVideoPlayer?.nativeElement?.videoHeight,
+      scaledWidth: this.lastScaledWidth,
+      scaledHeight: this.lastScaledHeight,
+      fileSizeKB,
       sourceImageDataUrl: this.currentImageDataUri,
     });
   }

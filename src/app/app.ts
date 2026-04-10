@@ -12,6 +12,7 @@ import { SourceImageData } from './camera/camera.model';
 export class App {
   protected readonly title = signal('camera-resize');
   isLandscapeMode = false;
+  capturedImage: SourceImageData | null = null;
 
   @ViewChild('camera') camera!: CameraComponent;
 
@@ -28,6 +29,7 @@ export class App {
   }
 
   cameraImageSourceOutput(event: SourceImageData) {
+    this.capturedImage = event;
     console.log('Image captured:', event);
   }
 
