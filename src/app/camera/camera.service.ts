@@ -44,7 +44,7 @@ export class CameraService implements OnDestroy {
           ? { deviceId: { exact: this.currentDeviceId } }
           : { facingMode: 'environment' }),
         width: { ideal: 1920 },
-        height: { ideal: 1920 },
+        height: { ideal: 1080 },
         frameRate: { ideal: 30, max: 30 },
       },
     };

@@ -36,6 +36,7 @@ const DISABLE_SCROLL = 'disable-scroll';
 export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() defaultScreenOrientation!: ScreenOrientationMode | string;
   @Input() videoConstrain!: VideoConstraints;
+  @Input() enableDownscaling = true;
   @Output() sourceImageDataEmitter: EventEmitter<SourceImageData> = new EventEmitter();
   @Output() cameraFailureMessageEmitter: EventEmitter<string> = new EventEmitter();
   @Output() cameraUnsupportedMessageEmitter: EventEmitter<string> = new EventEmitter();
@@ -294,7 +295,9 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
     const ctx = offScreenCanvas.getContext('2d');
     if (!ctx) return '';
 
-    const { width, height } = this.scaleToFit(imageSource.width, imageSource.height, 1920);
+    const { width, height } = this.enableDownscaling
+      ? this.scaleToFit(imageSource.width, imageSource.height, 1920)
+      : { width: imageSource.width, height: imageSource.height };
 
     offScreenCanvas.width = width;
     offScreenCanvas.height = height;

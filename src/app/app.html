@@ -97,6 +97,7 @@
 
 <agic-camera
   #camera
+  [enableDownscaling]="true"
   [defaultScreenOrientation]="'landscape'"
   (sourceImageDataEmitter)="cameraImageSourceOutput($event)"
   (cameraFailureMessageEmitter)="cameraFailureMessageOutput($event)"
