@@ -21,3 +21,9 @@ export interface SourceImageData {
 	imageHeight?: number;
 	sourceImageDataUrl?: string;
 }
+
+export interface ImageCaptureSource {
+	width: number;
+	height: number;
+	source: CanvasImageSource;
+}

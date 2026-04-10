@@ -22,7 +22,7 @@ import {
   takeUntil,
   tap,
 } from 'rxjs/operators';
-import { ScreenOrientationMode, SourceImageData, VideoConstraints } from './camera.model';
+import { ScreenOrientationMode, SourceImageData, VideoConstraints, ImageCaptureSource } from './camera.model';
 import { CameraService } from './camera.service';
 
 const DISABLE_SCROLL = 'disable-scroll';
@@ -267,59 +267,47 @@ export class CameraComponent implements OnInit, AfterViewInit, OnDestroy {
     this.canvasWidth = window.outerWidth;
     this.canvasHeight = window.outerHeight;
     this.bringImageCanvasForward();
-    this.drawCanvas({
-      imageWidth: loadedImageWidth,
-      imageHeight: loadedImageHeight,
-      sourceImageElement: this.cameraVideoPlayer.nativeElement,
+    this.currentImageDataUri = this.captureFrameAsDataUri({
+      width: loadedImageWidth,
+      height: loadedImageHeight,
+      source: this.cameraVideoPlayer.nativeElement,
     });
+    this.isCapturing = false;
   }
+
   /**
-   * draw current video player frame to canvas
-   * @param event
+   * Scale dimensions proportionally so neither exceeds maxDimension
    */
-  public drawCanvas(event: {
-    imageWidth: number;
-    imageHeight: number;
-    sourceImageElement: CanvasImageSource;
-  }) {
-    const offScreenCanvas: HTMLCanvasElement = this.renderer.createElement('canvas');
-    const canvasContent = offScreenCanvas.getContext('2d');
-    if (!canvasContent) return;
-
-    const sourceWidth = event.imageWidth;
-    const sourceHeight = event.imageHeight;
-    const MAX_DIMENSION = 1920;
-
-    let targetWidth = sourceWidth;
-    let targetHeight = sourceHeight;
-
-    // 1. Proportional Scaling Math
-    if (sourceWidth > MAX_DIMENSION || sourceHeight > MAX_DIMENSION) {
-      if (sourceWidth > sourceHeight) {
-        targetWidth = MAX_DIMENSION;
-        targetHeight = Math.round(sourceHeight * (MAX_DIMENSION / sourceWidth));
-      } else {
-        targetHeight = MAX_DIMENSION;
-        targetWidth = Math.round(sourceWidth * (MAX_DIMENSION / sourceHeight));
-      }
+  private scaleToFit(width: number, height: number, maxDimension: number): { width: number; height: number } {
+    if (width <= maxDimension && height <= maxDimension) {
+      return { width, height };
     }
+    const ratio = Math.min(maxDimension / width, maxDimension / height);
+    return { width: Math.round(width * ratio), height: Math.round(height * ratio) };
+  }
 
-    // 2. Cap the invisible canvas memory size
-    canvasContent.canvas.width = targetWidth;
-    canvasContent.canvas.height = targetHeight;
+  /**
+   * Capture a video frame to a downscaled JPEG data URI
+   */
+  private captureFrameAsDataUri(imageSource: ImageCaptureSource): string {
+    const offScreenCanvas = document.createElement('canvas');
+    const ctx = offScreenCanvas.getContext('2d');
+    if (!ctx) return '';
 
-    // 3. Use 5-parameter drawImage to force browser C++ downsampling
-    canvasContent.drawImage(event.sourceImageElement, 0, 0, targetWidth, targetHeight);
+    const { width, height } = this.scaleToFit(imageSource.width, imageSource.height, 1920);
 
-    // 4. Export as dataURI with 80% quality (0.8)
-    this.currentImageDataUri = offScreenCanvas.toDataURL('image/jpeg', 0.8);
+    offScreenCanvas.width = width;
+    offScreenCanvas.height = height;
+    ctx.drawImage(imageSource.source, 0, 0, width, height);
 
-    // 5. Memory Cleanup: Flush the uncompressed bitmap from RAM
-    canvasContent.clearRect(0, 0, targetWidth, targetHeight);
+    const dataUri = offScreenCanvas.toDataURL('image/jpeg', 0.8);
+
+    // Memory cleanup
+    ctx.clearRect(0, 0, width, height);
     offScreenCanvas.width = 0;
     offScreenCanvas.height = 0;
 
-    this.isCapturing = false;
+    return dataUri;
   }
 
   /**
